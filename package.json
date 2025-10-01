@@ -1,0 +1,74 @@
+{
+  "name": "hebrew-markdown-react",
+  "version": "0.1.0",
+  "description": "React wrapper for Dor Pascal's Hebrew Markdown Editor with RTL support, live preview, math formulas, and themes.",
+  "author": "Ariel Benesh",
+  "contributors": [
+    {
+      "name": "Dor Pascal",
+      "url": "https://github.com/Dor-sketch"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/relbns/hebrew-markdown-react.git"
+  },
+  "bugs": {
+    "url": "https://github.com/relbns/hebrew-markdown-react/issues"
+  },
+  "homepage": "https://github.com/relbns/hebrew-markdown-react#readme",
+  "keywords": [
+    "react",
+    "markdown",
+    "editor",
+    "hebrew",
+    "rtl",
+    "codemirror",
+    "katex",
+    "markdown-editor",
+    "storybook"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup src/index.ts --watch --dts",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "dompurify": "^3.2.7",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.22",
+    "marked": "^16.3.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/react-vite": "^8.6.14",
+    "@storybook/test": "^8.6.14",
+    "@types/codemirror": "^5.60.16",
+    "@types/katex": "^0.16.7",
+    "@types/node": "^24.6.1",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "codemirror": "^5.65.20",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": ">=10.0.0"
+  }
+}

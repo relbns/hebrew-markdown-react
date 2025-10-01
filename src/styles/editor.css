@@ -1,0 +1,363 @@
+/* === RESET === */
+*,
+*::before,
+*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { height: 100vh; overflow: hidden; }
+
+/* === VARIABLES === */
+:root{
+  --background:#fff;
+  --surface-1:#f7f9fc;
+  --surface-2:#eef2f7;
+  --card:#fff;
+  --text-primary:#111;
+  --text-secondary:#6b7280;
+  --divider:#e5e7eb;
+  --border:#e5e7eb;
+  --primary:#2563eb;
+  --primary-light:#e6f0ff;
+  --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem;
+  --space-xs:.25rem; --space-sm:.5rem; --space-md:1rem; --space-lg:1.5rem; --space-xl:2rem; --space-2xl:3rem;
+  --fs-sm:.875rem; --fs-md:1rem; --fs-lg:1.125rem; --fs-xl:1.25rem; --fs-2xl:1.5rem; --fs-3xl:1.875rem;
+  --editor-width:50%; --preview-width:50%;
+  --z-header:50; --z-toolbar:40;
+}
+
+[data-theme="dark"]{
+  --background:#0f172a;
+  --surface-1:#111827;
+  --surface-2:#1f2937;
+  --card:#111827;
+  --text-primary:#e5e7eb;
+  --text-secondary:#9ca3af;
+  --divider:#374151;
+  --border:#374151;
+  --primary:#4f46e5;
+  --primary-light:#312e81;
+  color-scheme: dark;
+}
+
+/* === BASE === */
+body{
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* === APP LAYOUT === */
+.app-container{ display:flex; flex-direction:column; height: 100vh;    overflow: hidden; }
+
+/* Header */
+.app-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: .75rem 1rem; background:var(--card);
+  border-bottom:1px solid var(--border); position:sticky; top:0; z-index:var(--z-header);
+}
+.app-title{ display:flex; align-items:center; gap:.5rem; }
+#logo{ width:40px; height:40px; border-radius:24%; }
+.app-title h1{ margin:0; font-size:var(--fs-md); font-weight:600; }
+
+/* Header controls */
+.header-controls{ display:flex; align-items:center; gap: .75rem; }
+
+/* View modes group */
+.view-modes{ display:flex; align-items:center; background:var(--surface-1); border-radius:var(--radius-lg); padding: var(--space-xs); box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.view-mode-btn{
+  border:none; background:none; color:var(--text-secondary);
+  font-size:var(--fs-sm); font-weight:500; padding:6px .9rem; border-radius:var(--radius-md);
+  cursor:pointer; transition:.15s; display:flex; align-items:center; gap:6px;
+}
+.view-mode-btn:hover{ color:var(--text-primary); background:var(--surface-2); }
+.view-mode-btn.active{ color:#fff; background:var(--primary); }
+
+/* Control group & buttons */
+.control-group{ display:flex; align-items:center; gap:.4rem; background:var(--surface-1); border-radius:var(--radius-lg); padding: var(--space-xs); }
+.btn{
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  background:none; border:none; color:var(--text-secondary);
+  border-radius:var(--radius-sm); position:relative; cursor:pointer; transition:.15s;
+}
+.btn:hover{ background:var(--surface-2); color:var(--text-primary); }
+.btn.primary{ background:var(--primary); color:#fff; }
+.btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+.btn .tooltip{
+  position:absolute; top:calc(100% + 6px); right:50%; transform:translateX(50%);
+  background:var(--card); color:var(--text-primary); border:1px solid var(--border);
+  font-size:.75rem; padding:.25rem .5rem; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,.06);
+  opacity:0; visibility:hidden; transition:.15s; white-space:nowrap;
+}
+.btn:hover .tooltip{ opacity:1; visibility:visible; }
+.tool-divider{ width:1px; height:22px; background:var(--divider); margin:0 .5rem; }
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem var(--space-md);
+  overflow-x: auto;
+  background: var(--bg-secondary, #f5f5f5);
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.toolbar.hidden {
+  max-height: 0;
+  padding: 0;
+  border-bottom: none;
+  overflow: hidden;
+}
+
+/* קבוצות כפתורים */
+.toolbar .tool-group {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  align-items: center;
+}
+
+/* מפרידים */
+.toolbar .tool-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color, #ddd);
+  margin: 0 0.3rem;
+}
+
+/* כפתורים */
+.toolbar .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.toolbar .btn:hover {
+  background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+}
+
+.toolbar .btn.primary {
+  background: var(--primary-color, #2563eb);
+  color: white;
+}
+
+.toolbar .btn.primary:hover {
+  background: var(--primary-hover, #1d4ed8);
+}
+
+.toolbar .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Tooltip */
+.toolbar .btn .tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  margin-bottom: 4px;
+}
+
+.toolbar .btn:hover .tooltip {
+  opacity: 1;
+}
+
+/* CodeMirror Find/Replace dialog */
+.CodeMirror-dialog {
+  direction: rtl !important; /* החלון תמיד משמאל לימין */
+  text-align: left !important;
+}
+.CodeMirror-dialog input {
+  width: 80%;
+  margin-left: .5rem;
+}
+
+
+.toolbar.hidden{ max-height:0; padding:0; border-bottom:none; overflow:hidden; }
+.toolbar .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Content area */
+.content-container{ flex:1; display:flex; overflow:hidden; }
+.editor-panel, .preview-panel{ flex:1; display:flex; flex-direction:column; overflow: hidden; }
+.editor-panel{ max-width:var(--editor-width); }
+.preview-panel{ max-width:var(--preview-width); }
+
+/* View-mode toggles */
+[data-view-mode="editor-only"] .preview-panel { display: none; }
+[data-view-mode="preview-only"] .editor-panel { display: none; }
+[data-view-mode="editor-only"] .editor-panel { max-width: 100% !important; flex: 1; }
+[data-view-mode="preview-only"] .preview-panel { max-width: 100% !important; flex: 1; }
+
+
+/* Panel headers */
+.panel-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.6rem 1rem; font-size:.8rem; font-weight:600; letter-spacing:.3px;
+  background:var(--surface-1); color:var(--text-secondary); border-bottom:1px solid var(--divider);
+}
+.panel-content{ flex:1; overflow:auto; min-height:0; }
+
+/* Divider (resizer) */
+.divider{ width:6px; background:var(--divider); cursor:col-resize; flex-shrink:0; }
+.divider:hover{ background:var(--primary); }
+.app-container.resizing{ user-select:none; cursor:col-resize; }
+
+/* CodeMirror */
+.editor-container{ flex:1; height:100%; overflow: hidden; }
+.CodeMirror{
+  height:100% !important; min-height: 100%; direction:rtl; font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:var(--card); color:var(--text-primary); padding-right: var(--space-lg);
+  text-align: right;
+}
+
+/* Preview */
+.preview-content{
+  padding: var(--space-2xl); max-width: 900px; margin: 0 auto;
+  color:var(--text-primary); direction:rtl;
+}
+.preview-content h1{ font-size:1.75rem; font-weight:700; margin:0 0 .75rem; border-bottom:1px solid var(--divider); padding-bottom:.25rem; }
+.preview-content h2{ font-size:1.5rem; font-weight:600; margin:1rem 0 .5rem; }
+.preview-content p{ margin:.5rem 0; }
+.preview-content ul{ list-style: disc inside; margin:.5rem 0 .5rem 1.25rem; }
+.preview-content code{ background:var(--surface-2); padding:.2rem .4rem; border-radius:4px; }
+.preview-content pre{
+  background:var(--surface-1); direction:ltr !important; text-align:left !important;
+  padding:1rem; border-radius:8px; overflow:auto; margin:1rem 0; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.preview-content table{
+  width:100%; border-collapse:collapse; margin:1.25rem 0; border:1px solid var(--border);
+  border-radius:8px; overflow:hidden;
+}
+.preview-content th, .preview-content td{ border:1px solid var(--divider); padding:.7rem 1rem; text-align:right; }
+.preview-content blockquote{
+  border-right:4px solid var(--primary); background:var(--surface-1);
+  margin:1rem 0; padding:.8rem 1.2rem; border-radius:8px; font-style:italic;
+}
+
+/* Status bar + credits */
+.status-bar{
+  display:flex; justify-content:space-between; padding:.4rem 1rem;
+  background:var(--surface-1); color:var(--text-secondary);
+  border-top:1px solid var(--divider);
+  direction:rtl;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  :root{ --editor-width:100%; --preview-width:100%; }
+  .content-container{ flex-direction:column; overflow:hidden; }
+  .divider{ display:none; }
+  .preview-content{ padding: var(--space-xl); }
+}
+
+/* === KaTeX === */
+.katex {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+
+/* נוסחאות inline – כחול */
+.preview-content .katex {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* נוסחאות block – ממורכזות בתוך card */
+.preview-content .katex-display {
+  display: flex;
+  justify-content: center;
+  padding: 1.2rem;
+  margin: 1.5rem 0;
+  background: var(--surface-1);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* === Highlight.js === */
+.preview-content pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: block;
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+/* אפשר לשנות theme לפי highlight.js (למשל github style) */
+.hljs-keyword, .hljs-selector-tag, .hljs-name {
+  color: #2563eb;
+  font-weight: bold;
+}
+.hljs-string, .hljs-title, .hljs-section {
+  color: #059669;
+}
+.hljs-number, .hljs-literal {
+  color: #d97706;
+}
+.hljs-comment {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* === Tables zebra === */
+.preview-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: var(--fs-md);
+}
+
+/* כותרת הטבלה */
+.preview-content thead tr {
+  background: var(--surface-2);  /* צבע קבוע לשורת כותרת */
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* תאים */
+.preview-content th,
+.preview-content td {
+  border: 1px solid var(--divider);
+  padding: .7rem 1rem;
+  text-align: right;
+}
+
+/* שורות גוף – לסירוגין */
+.preview-content tbody tr:nth-child(odd) {
+  background: var(--card); /* צבע רקע רגיל */
+}
+.preview-content tbody tr:nth-child(even) {
+  background: var(--surface-1); /* צבע רקע חלופי */
+}
