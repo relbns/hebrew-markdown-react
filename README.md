@@ -10,6 +10,13 @@ A modern, RTL-friendly Markdown editor with live preview, math rendering, and Ap
 
 ---
 
+## 📸 Screenshot
+
+![Hebrew Markdown Editor Screenshot](https://raw.githubusercontent.com/relbns/hebrew-markdown-react/master/src/assets/screenshot.png)
+
+
+---
+
 ## ✨ Features
 
 - ✅ Full Hebrew (RTL) support
