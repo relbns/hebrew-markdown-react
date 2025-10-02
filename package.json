@@ -1,6 +1,6 @@
 {
   "name": "hebrew-markdown-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React wrapper for Dor Pascal's Hebrew Markdown Editor with RTL support, live preview, math formulas, and themes.",
   "author": "Ariel Benesh",
   "contributors": [
