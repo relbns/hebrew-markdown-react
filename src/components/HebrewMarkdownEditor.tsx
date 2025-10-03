@@ -21,7 +21,7 @@ import Preview from './Preview';
 import StatusBar from './StatusBar';
 import { FaEye, FaCode } from 'react-icons/fa';
 
-interface HebrewMarkdownEditorProps {
+export interface HebrewMarkdownEditorProps {
   value?: string;
   onChange?: (content: string) => void;
   onSave?: (content: string) => void;
@@ -30,14 +30,14 @@ interface HebrewMarkdownEditorProps {
   showCredits?: boolean;
 }
 
-export const HebrewMarkdownEditor: React.FC<HebrewMarkdownEditorProps> = ({
+export const HebrewMarkdownEditor = ({
   value = '',
   onChange,
   onSave,
   height = '100%',
   className = '',
   showCredits = true,
-}) => {
+}: HebrewMarkdownEditorProps) => {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const editorPanelRef = useRef<HTMLDivElement>(null);
