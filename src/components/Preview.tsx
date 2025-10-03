@@ -5,7 +5,7 @@ interface PreviewProps {
 }
 
 const Preview: React.FC<PreviewProps> = ({ html }) => (
-  <div className="preview-content" dir="rtl" dangerouslySetInnerHTML={html} />
+  <div className="hmr-preview-content" dir="rtl" dangerouslySetInnerHTML={html} />
 );
 
 export default Preview;

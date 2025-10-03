@@ -28,7 +28,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const chars = content.length;
 
   return (
-    <footer className="status-bar">
+    <footer className="hmr-status-bar">
       <span>
         <i className="fa-solid fa-chart-simple" aria-hidden /> {words} מילים | <span>{chars} תווים</span>
       </span>
@@ -36,7 +36,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         שורה {cursor.line}, עמודה {cursor.ch}
       </span>
       {showCredits && (
-        <span id="credit">
+        <span id="hmr-credit">
           By{' '}
           <a href="https://dorpascal.com" target="_blank" rel="noreferrer">
             Dor Pascal
