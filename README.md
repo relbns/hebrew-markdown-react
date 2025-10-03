@@ -76,6 +76,34 @@ export default function App() {
 }
 ```
 
+### Setting Initial View Mode
+
+You can set the initial view mode using the `VIEW_MODES` constant for type safety:
+
+```tsx
+import { HebrewMarkdownEditor, VIEW_MODES } from "hebrew-markdown-react";
+import { useState } from "react";
+
+export default function App() {
+  const [value, setValue] = useState("# שלום עולם 👋");
+
+  return (
+    <div style={{ height: '80vh', width: '100%' }}>
+      <HebrewMarkdownEditor
+        value={value}
+        onChange={(val) => setValue(val)}
+        viewMode={VIEW_MODES.EDITOR_ONLY}
+      />
+    </div>
+  );
+}
+```
+
+Available view modes:
+- `VIEW_MODES.SPLIT` - Split view (default)
+- `VIEW_MODES.EDITOR_ONLY` - Editor only
+- `VIEW_MODES.PREVIEW_ONLY` - Preview only
+
 ---
 
 ## ⚙️ Props
@@ -87,6 +115,7 @@ export default function App() {
 | `onSave` | `(content: string) => void` | `undefined` | If provided, shows a "Save" button in the toolbar and is called when the user saves (Ctrl+S or button). |
 | `height` | `string` | `"100%"` | The height of the editor container (e.g., `"500px"`, `"80vh"`). The component fills its parent by default. |
 | `className` | `string` | `""` | Custom CSS class to apply to the root `hmr-container` element for custom styling. |
+| `viewMode` | `'split' \| 'editor-only' \| 'preview-only'` | `'split'` | The initial view mode of the editor. |
 | `showCredits` | `boolean` | `true` | Show credit link in the status bar. |
 
 ---

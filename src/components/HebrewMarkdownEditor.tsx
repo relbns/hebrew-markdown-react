@@ -15,7 +15,8 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
 
 import '../styles/index.css';
-import Header, { ViewMode } from './Header';
+import { ViewMode, VIEW_MODES } from '../types';
+import Header from './Header';
 import Toolbar from './Toolbar';
 import Preview from './Preview';
 import StatusBar from './StatusBar';
@@ -28,6 +29,7 @@ export interface HebrewMarkdownEditorProps {
   height?: string;
   className?: string;
   showCredits?: boolean;
+  viewMode?: ViewMode;
 }
 
 export const HebrewMarkdownEditor = ({
@@ -37,6 +39,7 @@ export const HebrewMarkdownEditor = ({
   height = '100%',
   className = '',
   showCredits = true,
+  viewMode: initialViewMode = VIEW_MODES.SPLIT,
 }: HebrewMarkdownEditorProps) => {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +49,7 @@ export const HebrewMarkdownEditor = ({
   const [editor, setEditor] = useState<CodeMirror.EditorFromTextArea | null>(null);
   const [content, setContent] = useState<string>(value);
   const [previewHtml, setPreviewHtml] = useState<{ __html: string }>({ __html: '' });
-  const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [toolbarVisible, setToolbarVisible] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [searchMode, setSearchMode] = useState<'find' | 'replace' | null>(null);

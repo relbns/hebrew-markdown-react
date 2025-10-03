@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { HebrewMarkdownEditor } from "../src";
+import { HebrewMarkdownEditor, VIEW_MODES } from "../src";
 import './custom.css';
 
 const meta: Meta<typeof HebrewMarkdownEditor> = {
@@ -11,6 +11,10 @@ const meta: Meta<typeof HebrewMarkdownEditor> = {
     height: { control: "text" },
     className: { control: "text" },
     showCredits: { control: "boolean" },
+    viewMode: {
+      control: { type: 'select' },
+      options: [VIEW_MODES.SPLIT, VIEW_MODES.EDITOR_ONLY, VIEW_MODES.PREVIEW_ONLY],
+    },
     onSave: { action: "onSave" },
     onChange: { action: "onChange" },
   },

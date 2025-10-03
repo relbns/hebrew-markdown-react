@@ -10,8 +10,7 @@ import {
   FaChevronDown,
 } from 'react-icons/fa';
 import logoUrl from '../assets/logo.svg';
-
-export type ViewMode = 'split' | 'editor-only' | 'preview-only';
+import { ViewMode } from '../types';
 
 interface HeaderProps {
   viewMode: ViewMode;
