@@ -10,19 +10,15 @@ import {
   FaChevronDown,
 } from 'react-icons/fa';
 import logoUrl from '../assets/logo.svg';
-
-export type ViewMode = 'split' | 'editor-only' | 'preview-only';
+import { ViewMode } from '../types';
 
 interface HeaderProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
-
   darkMode: boolean;
   onToggleDarkMode: () => void;
-
   toolbarVisible: boolean;
   onToggleToolbar: () => void;
-
   searchMode: 'find' | 'replace' | null;
   setSearchMode: (mode: 'find' | 'replace' | null) => void;
   onToggleFind: () => void;
@@ -42,41 +38,39 @@ const Header: React.FC<HeaderProps> = ({
   setSearchMode,
 }) => {
   return (
-    <header className="app-header">
-      <div className="app-title">
-        <img id="logo" src={logoUrl} alt="logo" />
+    <header className="hmr-header">
+      <div className="hmr-title">
+        <img className="hmr-logo" src={logoUrl} alt="logo" />
         <h1>Hebrew Markdown</h1>
       </div>
 
-      <div className="header-controls">
-        {/* Find / Replace */}
+      <div className="hmr-header-controls">
         {viewMode !== 'preview-only' && (
-          <div className="control-group">
+          <div className="hmr-control-group">
             <button
-              className={classNames('btn', { active: searchMode === 'find' })}
+              className={classNames('hmr-btn', { 'hmr-active': searchMode === 'find' })}
               onClick={onToggleFind}
               title="חיפוש (Ctrl/Cmd+F)"
             >
               <FaSearch />
-              <span className="tooltip">חיפוש (Ctrl/Cmd+F)</span>
+              <span className="hmr-tooltip">חיפוש (Ctrl/Cmd+F)</span>
             </button>
             <button
-              className={classNames('btn', {
-                active: searchMode === 'replace',
+              className={classNames('hmr-btn', {
+                'hmr-active': searchMode === 'replace',
               })}
               onClick={onToggleReplace}
               title="החלפה (Ctrl/Cmd+H)"
             >
               <FaExchangeAlt />
-              <span className="tooltip">החלפה (Ctrl/Cmd+H)</span>
+              <span className="hmr-tooltip">החלפה (Ctrl/Cmd+H)</span>
             </button>
           </div>
         )}
 
-        {/* View modes */}
-        <div className="view-modes">
+        <div className="hmr-view-modes">
           <button
-            className={classNames('view-mode-btn', {
+            className={classNames('hmr-view-mode-btn', {
               active: viewMode === 'editor-only',
             })}
             onClick={() => {
@@ -88,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
             <FaCode /> עריכה
           </button>
           <button
-            className={classNames('view-mode-btn', {
+            className={classNames('hmr-view-mode-btn', {
               active: viewMode === 'split',
             })}
             onClick={() => {
@@ -100,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({
             <FaColumns /> מפוצל
           </button>
           <button
-            className={classNames('view-mode-btn', {
+            className={classNames('hmr-view-mode-btn', {
               active: viewMode === 'preview-only',
             })}
             onClick={() => {
@@ -113,29 +107,28 @@ const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Theme + Hide toolbar */}
-        <div className="control-group">
+        <div className="hmr-control-group">
           <button
-            className={classNames('btn', 'theme-btn', { active: darkMode })}
+            className={classNames('hmr-btn', { 'hmr-active': darkMode })}
             onClick={onToggleDarkMode}
             title="מצב כהה/בהיר"
           >
             <FaPalette />
-            <span className="tooltip">מצב כהה/בהיר</span>
+            <span className="hmr-tooltip">מצב כהה/בהיר</span>
           </button>
 
-          <div className="tool-divider" />
+          <div className="hmr-tool-divider" />
 
           <button
-            className={classNames('btn', 'hide-toolbar-btn', {
-              active: !toolbarVisible,
+            className={classNames('hmr-btn', {
+              'hmr-active': !toolbarVisible,
             })}
             onClick={onToggleToolbar}
             aria-pressed={!toolbarVisible}
             title={toolbarVisible ? 'הסתר סרגל כלים' : 'הצג סרגל כלים'}
           >
             <FaChevronDown />
-            <span className="tooltip">
+            <span className="hmr-tooltip">
               {toolbarVisible ? 'הסתר סרגל כלים' : 'הצג סרגל כלים'}
             </span>
           </button>

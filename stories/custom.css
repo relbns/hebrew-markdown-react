@@ -1,0 +1,25 @@
+.custom-editor-theme {
+  --hmr-primary: #db2777;
+  --hmr-surface-1: #fce7f3;
+  --hmr-surface-2: #fbcfe8;
+  --hmr-card: #fff;
+  --hmr-text-primary: #500724;
+  --hmr-text-secondary: #831843;
+  --hmr-border: #f9a8d4;
+  --hmr-divider: #f9a8d4;
+}
+
+.custom-editor-theme.hmr-dark-mode {
+  --hmr-primary: #f9a8d4;
+  --hmr-surface-1: #500724;
+  --hmr-surface-2: #831843;
+  --hmr-card: #500724;
+  --hmr-text-primary: #fce7f3;
+  --hmr-text-secondary: #fbcfe8;
+  --hmr-border: #831843;
+  --hmr-divider: #831843;
+}
+
+.custom-editor-theme .hmr-toolbar {
+  border-bottom: 2px solid var(--hmr-primary);
+}

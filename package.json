@@ -1,6 +1,6 @@
 {
   "name": "hebrew-markdown-react",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "React wrapper for Dor Pascal's Hebrew Markdown Editor with RTL support, live preview, math formulas, and themes.",
   "author": "Ariel Benesh",
   "contributors": [
@@ -37,7 +37,7 @@
   ],
   "scripts": {
     "dev": "tsup src/index.ts --watch --dts",
-    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --external react react-dom",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

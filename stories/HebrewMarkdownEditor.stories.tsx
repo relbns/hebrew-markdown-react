@@ -1,17 +1,30 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { HebrewMarkdownEditor } from "../src";
+import { HebrewMarkdownEditor, VIEW_MODES } from "../src";
+import './custom.css';
 
-// 🔹 ה־Meta מגדיר את הקומפוננטה ואת השליטה ב־Controls
 const meta: Meta<typeof HebrewMarkdownEditor> = {
   title: "HebrewMarkdown/Editor",
   component: HebrewMarkdownEditor,
   parameters: { layout: "fullscreen" },
   argTypes: {
     value: { control: "text" },
+    height: { control: "text" },
+    className: { control: "text" },
     showCredits: { control: "boolean" },
+    viewMode: {
+      control: { type: 'select' },
+      options: [VIEW_MODES.SPLIT, VIEW_MODES.EDITOR_ONLY, VIEW_MODES.PREVIEW_ONLY],
+    },
     onSave: { action: "onSave" },
     onChange: { action: "onChange" },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 export default meta;
 
@@ -38,53 +51,46 @@ const demoMarkdown = `# עורך Markdown Right-to-Left (RTL)
 $$
 \\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}
 $$
-
-## קוד מקור
-
-\`\`\`javascript
-// דוגמת קוד בג'אווהסקריפט
-function hello() {
-    console.log("שלום עולם!");
-    return true;
-}
-
-// טיפול באירועים
-document.addEventListener('click', function() {
-    const message = "נלחץ כפתור!";
-    console.log(message);
-});
-\`\`\`
-
-## טבלאות
-
-| שם      | גיל | עיר         |
-|---------|-----|-------------|
-| ישראל   | 30  | תל אביב     |
-| שרה     | 25  | ירושלים     |
-| דוד     | 40  | חיפה        |
-
-## רשימת משימות
-
-- [x] עיצוב מודרני
-- [x] תמיכה בנוסחאות מתמטיות
-- [x] עימוד קוד
-- [ ] ייצוא ל-PDF
-- [ ] תמיכה בתמונות מקומיות
-
-נסה לערוך את הטקסט ולראות את התצוגה המקדימה בזמן אמת!
 `;
 
-// 🔹 סטורי יחיד – הכל דרך controls
-export const Playground: Story = {
+export const Default: Story = {
   args: {
     value: demoMarkdown,
-    showCredits: true,
-    onSave: (val: string) => {
-      navigator.clipboard
-        .writeText(val)
-        .then(() => alert("✅ Copied to clipboard:\n\n" + val))
-        .catch(() => alert("❌ Failed to copy"));
-    },
-    onChange: (val: string) => console.log("changed:", val),
+    onSave: (val: string) => alert(`Saved content:\n\n${val}`),
   },
+};
+
+export const FixedHeight: Story = {
+  args: {
+    ...Default.args,
+    height: '500px',
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ padding: '1rem' }}>
+        <h2>Editor with fixed height (500px)</h2>
+        <div style={{ border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden' }}>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
+};
+
+export const CustomStyled: Story = {
+  args: {
+    ...Default.args,
+    className: 'custom-editor-theme',
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ padding: '1rem' }}>
+        <h2>Editor with Custom Styling</h2>
+        <p>This editor has a custom theme applied via the <code>className</code> prop.</p>
+        <div style={{ border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden' }}>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
 };

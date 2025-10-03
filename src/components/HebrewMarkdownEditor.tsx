@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import CodeMirror from 'codemirror';
-
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/edit/continuelist';
@@ -8,54 +7,57 @@ import 'codemirror/addon/search/search';
 import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/dialog/dialog.css';
 import 'codemirror/addon/dialog/dialog';
-
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 
-import '../styles/editor.css';
-
-import Header, { ViewMode } from './Header';
+import '../styles/index.css';
+import { ViewMode, VIEW_MODES } from '../types';
+import Header from './Header';
 import Toolbar from './Toolbar';
 import Preview from './Preview';
 import StatusBar from './StatusBar';
 import { FaEye, FaCode } from 'react-icons/fa';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css'; // אפשר לבחור theme אחר
 
-interface HebrewMarkdownEditorProps {
+export interface HebrewMarkdownEditorProps {
   value?: string;
   onChange?: (content: string) => void;
   onSave?: (content: string) => void;
+  height?: string;
+  className?: string;
   showCredits?: boolean;
+  viewMode?: ViewMode;
 }
 
-export const HebrewMarkdownEditor: React.FC<HebrewMarkdownEditorProps> = ({
-  value,
+export const HebrewMarkdownEditor = ({
+  value = '',
   onChange,
   onSave,
+  height = '100%',
+  className = '',
   showCredits = true,
-}) => {
+  viewMode: initialViewMode = VIEW_MODES.SPLIT,
+}: HebrewMarkdownEditorProps) => {
   const editorRef = useRef<HTMLTextAreaElement>(null);
-  const [editor, setEditor] = useState<CodeMirror.EditorFromTextArea | null>(
-    null
-  );
-  const [content, setContent] = useState<string>(value || '');
-  const [previewHtml, setPreviewHtml] = useState<{ __html: string }>({
-    __html: '',
-  });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorPanelRef = useRef<HTMLDivElement>(null);
+  const dividerRef = useRef<HTMLDivElement>(null);
 
-  const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [editor, setEditor] = useState<CodeMirror.EditorFromTextArea | null>(null);
+  const [content, setContent] = useState<string>(value);
+  const [previewHtml, setPreviewHtml] = useState<{ __html: string }>({ __html: '' });
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [toolbarVisible, setToolbarVisible] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [searchMode, setSearchMode] = useState<'find' | 'replace' | null>(null);
 
   // ----- Editor init -----
   useEffect(() => {
-    if (!editorRef.current || editor) return;
+    if (!editorRef.current) return;
 
-    // Custom overlay for simple math/code tagging (optional)
     const cm = CodeMirror.fromTextArea(editorRef.current, {
       mode: 'markdown',
       lineWrapping: true,
@@ -64,16 +66,11 @@ export const HebrewMarkdownEditor: React.FC<HebrewMarkdownEditorProps> = ({
       viewportMargin: Infinity,
       extraKeys: {
         Enter: 'newlineAndIndentContinueMarkdownList',
-        'Ctrl-F': 'find',
-        'Cmd-F': 'find',
-        'Ctrl-H': 'replace',
-        'Cmd-H': 'replace',
-        'Ctrl-B': () => wrap('**', '**'),
-        'Cmd-B': () => wrap('**', '**'),
-        'Ctrl-I': () => wrap('*', '*'),
-        'Cmd-I': () => wrap('*', '*'),
-        'Ctrl-K': () => wrap('[', '](http://example.com)'),
-        'Cmd-K': () => wrap('[', '](http://example.com)'),
+        'Ctrl-F': 'find', 'Cmd-F': 'find',
+        'Ctrl-H': 'replace', 'Cmd-H': 'replace',
+        'Ctrl-B': () => wrap('**', '**'), 'Cmd-B': () => wrap('**', '**'),
+        'Ctrl-I': () => wrap('*', '*'), 'Cmd-I': () => wrap('*', '*'),
+        'Ctrl-K': () => wrap('[', '](http://example.com)'), 'Cmd-K': () => wrap('[', '](http://example.com)'),
         'Ctrl-S': () => onSave && onSave(cm.getValue()),
         'Cmd-S': () => onSave && onSave(cm.getValue()),
       },
@@ -92,140 +89,98 @@ export const HebrewMarkdownEditor: React.FC<HebrewMarkdownEditorProps> = ({
     });
 
     setEditor(cm);
-    if (value !== undefined) cm.setValue(value);
-    else
-      cm.setValue(
-        `# ברוך הבא!\n\nכתוב כאן Markdown בעברית.\n\n* תמיכה מלאה ב-RTL\n* כותרות, רשימות, קישורים ועוד\n\n\`\`\`js\nconsole.log("שלום עולם")\n\`\`\`\n`
-      );
-  }, [editor, onChange, onSave, value]);
+    cm.setValue(value);
+  }, []); // Should run only once
 
   // sync external value
   useEffect(() => {
-    if (editor && value !== undefined && value !== content)
+    if (editor && value !== content) {
       editor.setValue(value);
-  }, [value, editor]); // deliberately ignore content
+    }
+  }, [value, editor, content]);
 
-  // הוספה של renderer מותאם אישית
-  marked.use({
-    renderer: {
-      code({ text, lang }) {
-        if (lang && hljs.getLanguage(lang)) {
-          const highlighted = hljs.highlight(text, { language: lang }).value;
-          return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
-        }
-        const highlighted = hljs.highlightAuto(text).value;
-        return `<pre><code class="hljs">${highlighted}</code></pre>`;
+  // ----- Marked and Highlight.js setup -----
+  useEffect(() => {
+    marked.use({
+      renderer: {
+        code({ text, lang }) {
+          if (lang && hljs.getLanguage(lang)) {
+            const highlighted = hljs.highlight(text, { language: lang }).value;
+            return `<pre><code class="hljs hmr-language-${lang}">${highlighted}</code></pre>`;
+          }
+          const highlighted = hljs.highlightAuto(text).value;
+          return `<pre><code class="hljs">${highlighted}</code></pre>`;
+        },
       },
-    },
-  });
+    });
+  }, []);
 
   // ----- Preview render -----
   useEffect(() => {
     const render = async () => {
       let html = await marked.parse(content || '');
-
-      // KaTeX math
       html = html
-        .replace(/\$\$([\s\S]*?)\$\$/g, (_, eq) =>
-          katex.renderToString(eq, { displayMode: true, throwOnError: false })
-        )
-        .replace(/\$([^\$]+)\$/g, (_, eq) =>
-          katex.renderToString(eq, { displayMode: false, throwOnError: false })
-        );
-
+        .replace(/\$\$([\s\S]*?)\$\$/g, (_, eq) => katex.renderToString(eq, { displayMode: true, throwOnError: false }))
+        .replace(/\$([^\$]+)\$/g, (_, eq) => katex.renderToString(eq, { displayMode: false, throwOnError: false }));
       setPreviewHtml({ __html: DOMPurify.sanitize(html) });
     };
     render();
   }, [content]);
 
-  // ----- resizable divider -----
-  useEffect(() => {
-    const divider = document.querySelector('.divider') as HTMLDivElement | null;
-    const container = document.querySelector(
-      '.app-container'
-    ) as HTMLDivElement | null;
-    const editorPanel = document.querySelector(
-      '.editor-panel'
-    ) as HTMLDivElement | null;
-
-    if (!divider || !container || !editorPanel) return;
-
-    let isResizing = false;
-    let startX = 0;
-    let startWidth = 0;
-
-    const onDown = (e: MouseEvent) => {
-      if (viewMode !== 'split') return;
-      isResizing = true;
-      startX = e.clientX;
-      startWidth = editorPanel.getBoundingClientRect().width;
-      container.classList.add('resizing');
-      document.body.style.userSelect = 'none';
-    };
-    const onMove = (e: MouseEvent) => {
-      if (!isResizing) return;
-      const dx = e.clientX - startX;
-      const containerWidth = container.clientWidth;
+  // ----- Resizable divider -----
+  const onResizeStart = useCallback((e: React.MouseEvent) => {
+    if (viewMode !== 'split' || !editorPanelRef.current || !containerRef.current) return;
+    
+    const startX = e.clientX;
+    const startWidth = editorPanelRef.current.getBoundingClientRect().width;
+    
+    const onMove = (moveEvent: MouseEvent) => {
+      const dx = moveEvent.clientX - startX;
+      const containerWidth = containerRef.current!.clientWidth;
       const newWidth = startWidth + dx; // RTL
       const pct = Math.min(Math.max((newWidth / containerWidth) * 100, 20), 80);
-      document.documentElement.style.setProperty('--editor-width', `${pct}%`);
-      document.documentElement.style.setProperty(
-        '--preview-width',
-        `${100 - pct}%`
-      );
+      containerRef.current!.style.setProperty('--editor-width', `${pct}%`);
+      containerRef.current!.style.setProperty('--preview-width', `${100 - pct}%`);
       editor?.refresh();
     };
+
     const onUp = () => {
-      isResizing = false;
-      container.classList.remove('resizing');
-      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      containerRef.current?.classList.remove('hmr-resizing');
       editor?.refresh();
     };
 
-    divider.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-
-    return () => {
-      divider.removeEventListener('mousedown', onDown);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    containerRef.current.classList.add('hmr-resizing');
   }, [viewMode, editor]);
 
-  // ----- dark mode -----
+  // ----- Dark mode -----
   useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) root.setAttribute('data-theme', 'dark');
-    else root.removeAttribute('data-theme');
-    // force refresh (scrollbars/colors)
     setTimeout(() => editor?.refresh(), 0);
   }, [darkMode, editor]);
 
-  // search toggle
+  // ----- Search toggle -----
   const toggleFind = () => {
     if (!editor) return;
-    if (searchMode === 'find') {
-      setSearchMode(null);
-      (editor as any).execCommand('clearSearch');
-    } else {
-      setSearchMode('find');
-      (editor as any).execCommand('find');
-    }
+    setSearchMode(prev => (prev === 'find' ? null : 'find'));
+    (editor as any).execCommand(searchMode !== 'find' ? 'find' : 'clearSearch');
   };
   const toggleReplace = () => {
     if (!editor) return;
-    if (searchMode === 'replace') {
-      setSearchMode(null);
-      (editor as any).execCommand('clearSearch');
-    } else {
-      setSearchMode('replace');
-      (editor as any).execCommand('replace');
-    }
+    setSearchMode(prev => (prev === 'replace' ? null : 'replace'));
+    (editor as any).execCommand(searchMode !== 'replace' ? 'replace' : 'clearSearch');
   };
 
+  const containerClasses = [
+    'hmr-container',
+    className,
+    darkMode ? 'hmr-dark-mode' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <div className="app-container" data-view-mode={viewMode}>
+    <div ref={containerRef} className={containerClasses} style={{ height }} data-view-mode={viewMode}>
       <Header
         viewMode={viewMode}
         setSearchMode={setSearchMode}
@@ -241,27 +196,25 @@ export const HebrewMarkdownEditor: React.FC<HebrewMarkdownEditorProps> = ({
 
       <Toolbar editor={editor} onSave={onSave} hidden={!toolbarVisible} />
 
-      <div className="content-container">
-        {/* Editor panel */}
-        <div className="editor-panel">
-          <div className="panel-header">
+      <div className="hmr-content-container">
+        <div ref={editorPanelRef} className="hmr-editor-panel">
+          <div className="hmr-panel-header">
             <FaCode /> <span>עריכה</span>
           </div>
-          <div className="panel-content">
-            <div className="editor-container">
-              <textarea ref={editorRef} />
+          <div className="hmr-panel-content">
+            <div className="hmr-editor-wrapper">
+              <textarea ref={editorRef} defaultValue={value} />
             </div>
           </div>
         </div>
 
-        <div className="divider" />
+        <div ref={dividerRef} className="hmr-divider" onMouseDown={onResizeStart} />
 
-        {/* Preview panel */}
-        <div className="preview-panel">
-          <div className="panel-header">
+        <div className="hmr-preview-panel">
+          <div className="hmr-panel-header">
             <FaEye /> <span>תצוגה מקדימה</span>
           </div>
-          <div className="panel-content">
+          <div className="hmr-panel-content">
             <Preview html={previewHtml} />
           </div>
         </div>
